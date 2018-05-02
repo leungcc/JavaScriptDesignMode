@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>AOP(面向切面编程)</title>
+</head>
+<body>
+	<!-- 把跟核心业务逻辑模块无关的功能抽离出来，再通过“动态织入”的方式渗入业务逻辑模块中
+	保持业务逻辑模块纯净和高内聚性 -->
+	<script type="text/javascript">
+
+	Function.prototype.before = function( beforeFn ) {
+		var __self = this;	// 保持原函数的引用
+		return function() {	// 返回包含了原函数和新函数“代理”函数
+			beforeFn.apply( null, arguments );
+			return __self.apply( null, arguments );
+		}
+	}
+
+	Function.prototype.after = function( afterFn ) {
+		var __self = this;
+		return function() {
+			var ret = __self.apply( null, arguments );
+			afterFn.apply( null, arguments );
+			return ret;
+		}
+	}
+
+	var func = function() {
+		console.log(2);
+	}
+	func = func.before(function(){ 
+		console.log(1); 
+	}).after(function() {
+		console.log(3);
+	});
+	func();
+
+
+	</script>
+</body>
+</html>
