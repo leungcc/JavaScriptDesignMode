@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>让小球动起来</title>
+    <style type="text/css">
+    #main {
+        width: 100px;
+        height: 100px;
+        background-color: #fcf;
+        border-radius: 50%;
+        position: absolute;
+        top: 100px;
+        left: 100px;
+    }
+    </style>
+    
+</head>
+<body>
+
+    <div id="main"></div>
+<script>
+// 这些算法都接受4个参数：动画已消耗时间、小球原始位置、小球目标位置、动画持续总时间
+var tween = {
+    linear: function(runtime, startX, endX, totaltime) {
+        console.log(endX)
+        return endX * runtime/totaltime + startX;
+    },
+    easeIn: function(runtime, startX, endX, totaltime) {
+        return endX * (runtime*runtime)/(totaltime*totaltime) + startX;
+    },
+    easeOut: function(runtime, startX, endX, totaltime) {
+        return 2*(endX)*runtime/totaltime - (endX)*runtime*runtime/(totaltime*totaltime) + startX
+    }
+}
+
+// 定义Animate类，Animate的构造函数接受一个参数：即将动起来的 dom 节点。
+var Animate = function(dom) {
+    this.dom = dom;
+    this.startTime = 0;
+    this.startPos = 0;
+    this.endPos = 0;
+
+    this.propertyName = null;
+    this.easying = null;
+    this.duration = null;
+}
+// 负责启动这个动画
+Animate.prototype.start = function(propertyName, endPos, duration, easing) {
+    this.startTime = +new Date();
+    this.startPos = this.dom.getBoundingClientRect()[propertyName] //dom节点初始位置
+    this.endPos = endPos;
+    
+    this.propertyName = propertyName;
+    this.easing = tween[easing];
+    this.duration = duration;
+
+    var self = this;
+    var timeId = setInterval(function() {
+        if(self.step() === false) {
+            clearInterval(timeId);
+        }
+    }, 19);
+}
+// 负责小球运动每一帧要做的事情。
+// 计算小球的当前位置和调用更新CSS属性的方法 Animate.prototype.update
+Animate.prototype.step = function() {
+    var t = +new Date();
+    if(t >= (this.startTime + this.duration)) {
+        this.update(this.endPos);
+        return false;
+    }
+    var pos = this.easing(t-this.startTime, this.startPos, this.endPos-this.startPos, this.duration);
+    this.update(pos);
+}
+// 负责更新小球CSS属性值
+Animate.prototype.update = function(pos) {
+    this.dom.style[this.propertyName] = pos + 'px';
+}
+
+var div = document.getElementById("main");
+var animate = new Animate(div);
+animate.start('left', 500, 5000, 'easeOut');
+var animate2 = new Animate(div);
+animate2.start('top', 500, 5000, 'easeOut');
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>策略模式计算奖金</title>
+</head>
+<body>
+
+<script>
+// 策略模式：
+// 定义一系列算法，把它们一个个封装起来。
+// 策略模式的目的就是将算法的使用和算法的实现分离开来。
+
+// 一个基于策略模式的程序至少由两部分组成
+// --1.策略类：
+//         策略类封装了具体的算法，并负责具体的计算过程；
+// --2.环境类：
+//         环境类 Context, Context类接受用户的请求，随后把请求委托给某一个策略类。
+//         （要做到这一点，说明 Context中要维持对某个策略对象的引用）
+
+// 绩效类
+var performanceS = function(){};
+var performanceA = function(){};
+var performanceB = function(){};
+
+performanceS.prototype.calculate = function(salary) {
+    return salary*4;
+}
+performanceA.prototype.calculate = function(salary) {
+    return salary*3;
+}
+performanceB.prototype.calculate = function(salary) {
+    return salary*2;
+}
+
+// 奖金类
+var Bonus = function(strategy) {
+    this.salary = null; //原始工资
+    this.strategy = strategy; //设置绩效等级对应的策略对象
+}
+// 设置员工工资
+Bonus.prototype.setSalary = function(salary) {
+    this.salary = salary;
+}
+// 设置员工绩效对应的策略对象
+Bonus.prototype.setStrategy = function(strategy) {
+    this.strategy = strategy;
+}
+// 获取奖金数额
+Bonus.prototype.getBonus = function() {
+    return this.strategy.calculate(this.salary)
+}
+
+
+var bonus = new Bonus();
+bonus.setSalary(10000);
+bonus.setStrategy(new performanceS());
+console.log(bonus.getBonus());
+
+// 这段代码是基于传统面向对象语言的模仿，下一节我们将了解用 JavaScript 实现的策略模式
+</script>
+</body>
+</html>
