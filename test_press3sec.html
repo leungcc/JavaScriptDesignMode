@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>按钮3秒-触发</title>
+</head>
+<body>
+    <div id="main"></div>
+    <button id="btn">按钮</button>
+<script>
+    var mainDiv = document.getElementById("main");
+    var btn = document.getElementById("btn");
+    var state = false;
+    var timer = null;
+    btn.onmousedown = mousedownCB;
+
+    function mousedownCB(e) {
+        this.onmousedown = null;
+        state = true;
+        btn.onmouseup = mouseupCB;
+        timer = setTimeout(function() {
+            if(state) {
+                // 3s后你要干的事情
+                alert("3s后你要干的事情");
+            }
+            if(!this.mousedown) btn.onmousedown = mousedownCB;
+        }, 3*1000)
+    }
+
+    function mouseupCB(e) {
+        state = false;
+        if(timer) clearTimeout(timer);
+        btn.onmousedown = mousedownCB;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>uncurrying</title>
+</head>
+<body>
+	<script type="text/javascript">
+	// 在我们预期中，Array.prototype 上的方法原本只能用来操作 array 对象。
+	// 但用 call 和 apply 可以把任意对象当做 this 传入某个方法
+	// 这样一来，方法中用到 this 的地方就不再局限于原来规定的对象
+	// 
+	// 那么有没有办法把泛化的 this 提取出来呢？uncurrying 就是用来解决这个问题的
+	
+	Function.prototype.uncurrying = function() {
+		var self = this;
+		return function() {
+			var obj = Array.prototype.shift.call( arguments ); //拿到第一个参数
+			return self.apply( obj, arguments );
+		}
+	} 
+
+	var arr = [1, 2, 3];
+	var push = Array.prototype.push.uncurrying();
+	push(arr, 4);
+	console.log('arr', arr);
+
+	
+	</script>
+</body>
+</html>

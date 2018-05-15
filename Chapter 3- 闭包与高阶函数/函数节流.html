@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>函数节流-被频繁调用的处理</title>
+</head>
+<body>
+<script>
+// 问题：
+// 如果我们在 window.onresize 事件函数里有一些跟 DOM 节点相关的操作，
+// 而跟 DOM 节点相关的操作往往是非常耗性能的。这时浏览器会吃不消会造成卡顿
+
+// 解决原理：
+// 将即将被执行的函数用 setTimeout 延迟一段时间执行。如果该次延迟执行还没完成，
+// 则忽略接下来的请求
+
+/*xc以前写法*/
+var timer, TIME = 1000, index = 1;
+window.onresize = function(){
+    if(timer) return;
+
+    // 回调
+    //fn() //console.log(document.body.clientWidth + "," +document.body.clientHeight)
+
+    timer = setTimeout(function(){
+        timer = null;
+    }, TIME)
+}
+
+/* throttle */
+var throttle = function(fn, interval) {
+    var __self = fn,
+        timer;
+    return function(){
+        if(timer) return;
+        fn();
+        timer = setTimeout(function() {
+            timer = null;
+        }, interval)
+    }
+}
+
+function CB() {
+    console.log(index++)
+}
+
+window.onresize = throttle(CB, 1*1000)
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>uncurrying2</title>
+</head>
+<body>
+	<script type="text/javascript">
+	// 除了上述 uncurrying 代码。下面的代码是 uncurrying 的另外一种实现方式
+	Function.prototype.uncurrying = function() {
+		var self = this;
+		return function() {
+			return Function.prototype.call.apply( self, arguments );
+		}
+	}
+	var arr = [1, 2, 3, 4];
+	var push = Array.prototype.push.uncurrying();
+	push(arr, 5);
+	console.log('arr', arr);
+
+	</script>
+</body>
+</html>

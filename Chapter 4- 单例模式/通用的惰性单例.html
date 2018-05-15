@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>通用的惰性单例</title>
+</head>
+<body>
+<script>
+// 我们需要把不变的部分隔离出来，先不考虑创建一个 div 和创建一个 iframe 有多少差异
+// 管理单例的逻辑其实是完全可以抽象出来的，这个逻辑始终一样：
+// var obj;
+// if(!obj) {
+//     obj = xxx;
+// }
+
+// 创建对象的方法 fn 被当成参数动态传入 getSingle 函数：
+// 下面是抽象出来的管理单例的逻辑
+var getSingle = function() {
+    var result;
+    return function() {
+        return result || (result = fn.apply(this, arguments));
+    }
+}
+// 接下来用于创建登录浮窗的方法用参数 fn 的形式传入 getSingle，我们不仅可以传入 createLoginLayer，
+// 还能传入 createScript、createIframe、createXhr 等。
+// 之后再让 getSingle 返回一个新函数，并用一个变量 result 来保存 fn 的计算结果。
+// result 变量因为身在闭包当中，它永远不会被销毁（getSingle执行完返回的函数变量指向null外）
+// 在将来的请求中，如果 result 已经被赋值，那么它将返回这个值
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>分时函数-因客观原因，这些函数会严重影响页面性能</title>
+    <style type="text/css">
+    .test-div {
+        float: left;
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ccc;
+        text-align: center;
+        line-height: 30px;
+    }
+    </style>
+</head>
+<body>
+<script>
+// 一个例子是创建 WebQQ 的 QQ 好友列表。可能一次性往页面创建成百上千个节点。
+// 短时间内往页面中大量添加 DOM 节点显然会让浏览器吃不消，结果一般就是浏览器卡顿或假死 
+var arr = [];
+for (var i=0,len=1000; i<=len; i++) {
+    arr.push(i); // 假设 arr 装载了1000个好友数据
+}
+// var renderFriendList = function(data) {
+//     for(var i=0,len=arr.length; i<len; i++) {
+//         var div = document.createElement('div');
+//         div.className = "test-div"
+//         div.innerHTML = i;
+//         document.body.appendChild(div);
+//     }
+// }
+// renderFriendList();
+
+// 解决方案：
+// timeChunk 函数让创建节点的工作分批进行，比如把1秒创建1000个节点，改为每隔200毫秒创建8个节点
+// timeChunk 接受3个参数，第1个参数是创建节点需要用到的数据，第2个参数是封装了创建节点的逻辑函数，
+// 第3个参数表示每一批创建的节点的数量
+var timeChunk = function(ary, fn, count) {
+    var obj, t;
+    var len = ary.length;
+    var start = function() {
+        // for(var i=0; i<Math.min(count || 1, ary.length); i++) {
+        //     var obj = ary.shift();
+        //     fn(obj);
+        // }
+        for(var i=0; i<count; i++) {
+            var obj = ary.shift();
+            if(obj) {
+                fn(obj);
+            } else {
+                break;
+            }
+        }
+    }
+    return function() {
+        t = setInterval(function() {
+            if(ary.length === 0) {
+                return clearInterval(t);
+            }
+            start();
+        }, 200)
+    }
+}
+
+// 渲染单个的逻辑
+var renderSingle = function(item) {
+    var div = document.createElement('div');
+    div.className = "test-div"
+    div.innerHTML = item;
+    document.body.appendChild(div);
+}
+
+
+var renderFriendList = timeChunk(arr, renderSingle, 100);
+renderFriendList();
+
+</script>
+</body>
+</html>
