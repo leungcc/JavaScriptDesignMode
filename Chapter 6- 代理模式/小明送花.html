@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小明送花给女神例子</title>
+</head>
+<body>
+
+<script>
+var Flower = function(){};
+
+// 小明
+var xiaoming = {
+    // target: 花的接收人
+    sendFlower: function(target) {
+        var flower = new Flower();
+        target.receiveFlower(flower);
+    }
+}
+
+// 小明和女神的公共朋友
+var B = {
+    receiveFlower: function(flower) {
+        this.get_A_mood(function(){
+            A.receiveFlower(flower);
+        })
+    },
+    get_A_mood: function(fn) {
+        var randomNum = Math.random()*10;
+        if(randomNum > 5) {
+            fn();
+        } else {
+            console.log("A心情不好哦~")
+            this.get_A_mood(fn);
+        }
+    }
+}
+
+// 女神
+var A = {
+    receiveFlower: function(flower) {
+        console.log('收到花' + flower);
+    }
+}
+
+xiaoming.sendFlower(B);
+</script>
+</body>
+</html>

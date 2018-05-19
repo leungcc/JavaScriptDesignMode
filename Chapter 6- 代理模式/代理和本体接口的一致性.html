@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+<body>
+
+<script>
+// 如果有一天我们不需要预加载，那么就不需要代理对象，可以选择直接请求主题。
+// **关键是 “代理对象” 和 “本体” 都对外提供了 setSrc 方法，在客户看来，代理对象和本体是一致的。
+// 这过程对用户来说是透明的，用户并不清楚代理和本体的区别。
+//      -- 用户可以放心地请求代理，他只关心能否得到想要的结果
+//      -- 任何在任何使用本体的地方都可以替换成使用代理
+
+// 在 Java 等语言中，代理和本体都要显式地实现同一个接口，一方面接口保证了它们会拥有同样的方法
+// 另一方面，通过接口进行向上转型，从而避开编译器的类型检查，代理和本体将来可以被替换使用
+
+var myImage = (function() {
+    var imgNode = document.createElement('img');
+    document.body.appendChild(imgNode);
+    return function(src) {
+        imgNode.src = src;
+    }
+}());
+
+var proxyImage = (function(){
+    var img = new Image();
+    img.onload = function() {
+        myImage(this.src);
+    }
+
+    return function(src) {
+        myImage('loading.gif');
+        img.src = src;
+    }
+}());
+
+proxyImage('http://imgcache.qq.com/music//N/k/000GGDys0yA0Nk.jpg')
+
+</script>
+</body>
+</html>
