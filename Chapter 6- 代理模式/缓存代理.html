@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>缓存pt代理</title>
+</head>
+<body>
+    
+<script>
+    //先创建一个用于求乘积的函数
+    var mult = function() {
+        var a = 1;
+        for(var i=0,l=arguments.length; i<l; i++) {
+            a = a * arguments[i];
+        }
+        return a;
+    }
+    console.log('proxy');
+    console.log(mult(2, 3));
+    console.log(mult(2, 3, 4, 5));
+    
+    var proxyMult = (function(){
+        var cache = {};
+        return function() {
+            var args = Array.prototype.join.call(arguments, ',');
+            if(args in cache) {
+                return cache[args];
+            }
+            return cache[args] = mult.apply(this, arguments);
+        }
+    }());
+    console.log('proxyMult');
+    console.log(proxyMult(2, 3));
+    console.log(proxyMult(2, 3, 4, 5));
+
+</script>
+</body>
+</html>
